@@ -2,377 +2,120 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Orchestrator · Vito Zero</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
-      background: #05060a;
-      color: #f5f5f5;
-    }
-    header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #222;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #050608;
-    }
-    header h1 {
-      font-size: 18px;
-      margin: 0;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    header span {
-      font-size: 11px;
-      opacity: 0.7;
-    }
-    main {
-      padding: 16px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .panel {
-      background: #111319;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 14px;
-      border: 1px solid #1f222b;
-    }
-    .panel h2 {
-      font-size: 14px;
-      margin: 0 0 8px 0;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #a0a4b8;
-    }
-    label {
-      font-size: 12px;
-      display: block;
-      margin-bottom: 4px;
-      color: #c3c7d9;
-    }
-    textarea, select, input[type="text"] {
-      width: 100%;
-      box-sizing: border-box;
-      border-radius: 8px;
-      border: 1px solid #2a2e3a;
-      background: #05060a;
-      color: #f5f5f5;
-      padding: 8px 10px;
-      font-size: 13px;
-      resize: vertical;
-    }
-    textarea {
-      min-height: 90px;
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .col {
-      flex: 1 1 180px;
-    }
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 9px 18px;
-      font-size: 13px;
-      cursor: pointer;
-      background: #2f7df4;
+      background: #0d0d0d;
       color: white;
-      font-weight: 500;
-      margin-right: 8px;
-    }
-    button.secondary {
-      background: #222633;
-      color: #d0d3e0;
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-    .chip {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid #2a2e3a;
-      cursor: pointer;
-      background: #05060a;
-    }
-    .chip.active {
-      background: #2f7df4;
-      border-color: #2f7df4;
-      color: white;
-    }
-    .log {
-      font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
-      font-size: 11px;
-      background: #05060a;
-      border-radius: 8px;
-      padding: 8px 10px;
-      max-height: 220px;
-      overflow-y: auto;
-      border: 1px solid #1f222b;
-      white-space: pre-wrap;
-    }
-    .badge {
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid #2a2e3a;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      opacity: 0.8;
+      font-family: Arial, sans-serif;
     }
 
-    /* Agenti cliccabili */
-    .agent-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
+    header {
+      padding: 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      border-bottom: 1px solid #222;
     }
-    .agent-card {
-      background: #0d0f14;
-      border: 1px solid #1f222b;
-      border-radius: 10px;
-      padding: 12px;
-      cursor: pointer;
-      transition: 0.2s;
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
     }
-    .agent-card:hover {
-      background: #1a1d25;
-      border-color: #2f7df4;
-    }
-    .agent-card.active {
-      background: #2f7df4;
-      border-color: #2f7df4;
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: #111;
+      border: 1px solid #333;
       color: white;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      resize: none;
     }
-    .agent-card h3 {
-      margin: 0 0 6px 0;
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: #1a73e8;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1666c4;
+    }
+
+    .log-box {
+      margin-top: 25px;
+      padding: 15px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      height: 250px;
+      overflow-y: auto;
+      white-space: pre-wrap;
       font-size: 14px;
-    }
-    .agent-card p {
-      margin: 0;
-      font-size: 11px;
-      opacity: 0.8;
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <div>
-      <h1>Vito Zero · AI Orchestrator</h1>
-      <span>Interfaccia unica per agenti, notebook e Drive</span>
-    </div>
-    <div>
-      <span class="badge">BETA · web</span>
-    </div>
-  </header>
+  <header>AI Orchestrator · Vito Zero</header>
 
-  <main>
-    <!-- 1. Richiesta di Vito -->
-    <section class="panel">
-      <h2>1 · Cosa vuoi che faccia?</h2>
-      <label for="userRequest">Descrivi la tua richiesta (es: “cerca studi su glicemia e crea un report”).</label>
-      <textarea id="userRequest" placeholder="Scrivi qui la tua richiesta..."></textarea>
-      <div class="chips" id="behaviorChips">
-        <div class="chip" data-behavior="scientifico">Stile scientifico</div>
-        <div class="chip" data-behavior="sintetico">Sintetico</div>
-        <div class="chip" data-behavior="didattico">Didattico</div>
-        <div class="chip" data-behavior="creativo">Creativo</div>
-      </div>
-    </section>
+  <div class="container">
+    <h2>Invia una richiesta</h2>
 
-    <!-- 2. Scelta agente e comportamento -->
-    <section class="panel">
-      <h2>2 · Scelta agente e comportamento</h2>
+    <textarea id="userInput" placeholder="Scrivi qui la tua richiesta..."></textarea>
+    <button id="sendBtn">Invia al backend</button>
 
-      <!-- Agenti cliccabili con reminder -->
-      <div class="agent-grid">
-        <div class="agent-card" data-agent="orchestrator_agent">
-          <h3>Orchestrator</h3>
-          <p>Decide quali agenti usare e in che ordine.</p>
-        </div>
-
-        <div class="agent-card" data-agent="web_researcher">
-          <h3>Web Researcher</h3>
-          <p>Ricerca online, raccoglie fonti e studi.</p>
-        </div>
-
-        <div class="agent-card" data-agent="data_analyst">
-          <h3>Data Analyst</h3>
-          <p>Analizza dati, tabelle, numeri e risultati.</p>
-        </div>
-
-        <div class="agent-card" data-agent="report_generator">
-          <h3>Report Generator</h3>
-          <p>Crea documenti PDF, DOCX, MD.</p>
-        </div>
-
-        <div class="agent-card" data-agent="drive_manager">
-          <h3>Drive Manager</h3>
-          <p>Salva file e gestisce cartelle su Drive.</p>
-        </div>
-
-        <div class="agent-card" data-agent="notebook_writer">
-          <h3>Notebook Writer</h3>
-          <p>Genera codice, notebook e script.</p>
-        </div>
-
-        <div class="agent-card" data-agent="glyco_nutrition_agent">
-          <h3>Glyco Nutrition</h3>
-          <p>Analisi GI, GL, curve glicemiche, schede alimenti.</p>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top: 12px;">
-        <div class="col">
-          <label for="agentSelect">Agente (in futuro: selezione automatica)</label>
-          <select id="agentSelect">
-            <option value="auto">Selezione automatica (futuro)</option>
-            <option value="web_researcher">Web Researcher</option>
-            <option value="notebook_writer">Notebook / LLM Writer</option>
-            <option value="drive_manager">Drive Manager</option>
-            <option value="report_generator">Report Generator</option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="toneInput">Come deve comportarsi? (tono, ruolo, vincoli)</label>
-          <input id="toneInput" type="text" placeholder="Es: rigoroso, cita le fonti, niente opinioni personali..." />
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. Output: formato e destinazione -->
-    <section class="panel">
-      <h2>3 · Formato del documento e destinazione</h2>
-      <div class="row">
-        <div class="col">
-          <label for="docTitle">Titolo del documento</label>
-          <input id="docTitle" type="text" placeholder="Es: Report glicemia post-prandiale · v1" />
-        </div>
-        <div class="col">
-          <label for="formatSelect">Formato file</label>
-          <select id="formatSelect">
-            <option value="md">Markdown (.md)</option>
-            <option value="pdf">PDF (.pdf)</option>
-            <option value="docx">Word (.docx)</option>
-            <option value="txt">Testo (.txt)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row" style="margin-top: 10px;">
-        <div class="col">
-          <label for="destinationSelect">Dove salvarlo?</label>
-          <select id="destinationSelect">
-            <option value="drive">Cartella Drive collegata</option>
-            <option value="local">Scarica sul dispositivo</option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="driveFolderId">ID cartella Drive (già collegata)</label>
-          <input id="driveFolderId" type="text"
-                 placeholder="1RnZsEDQN6lTj5dpe-R_TLw5lGnlqq9ey" />
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. Controllo -->
-    <section class="panel">
-      <h2>4 · Esecuzione</h2>
-      <button id="runButton">Esegui richiesta</button>
-      <button id="clearLog" class="secondary">Pulisci log</button>
-      <div style="margin-top: 10px;">
-        <label>Log / simulazione decisioni</label>
-        <div id="log" class="log"></div>
-      </div>
-    </section>
-  </main>
+    <h3>Log</h3>
+    <div id="log" class="log-box"></div>
+  </div>
 
   <script>
-    const logEl = document.getElementById("log");
-    const runButton = document.getElementById("runButton");
-    const clearLogButton = document.getElementById("clearLog");
-    const behaviorChips = document.getElementById("behaviorChips");
-    const agentCards = document.querySelectorAll(".agent-card");
-    let selectedAgent = null;
+    const WORKER_URL = "https://shy-butterfly-dca9.rallo-vito.workers.dev/";
+
+    const logBox = document.getElementById("log");
+    const sendBtn = document.getElementById("sendBtn");
 
     function log(msg) {
-      const time = new Date().toLocaleTimeString();
-      logEl.textContent += `[${time}] ${msg}\n`;
-      logEl.scrollTop = logEl.scrollHeight;
+      logBox.textContent += msg + "\n";
+      logBox.scrollTop = logBox.scrollHeight;
     }
 
-    // Selezione comportamento (chip)
-    behaviorChips.addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if (!chip) return;
-      [...behaviorChips.querySelectorAll(".chip")].forEach(c => c.classList.remove("active"));
-      chip.classList.add("active");
-    });
-
-    // Selezione agente (card cliccabili)
-    agentCards.forEach(card => {
-      card.addEventListener("click", () => {
-        agentCards.forEach(c => c.classList.remove("active"));
-        card.classList.add("active");
-        selectedAgent = card.dataset.agent;
-        log(`Agente selezionato: ${selectedAgent}`);
-      });
-    });
-
-    clearLogButton.addEventListener("click", () => {
-      logEl.textContent = "";
-    });
-
-    runButton.addEventListener("click", () => {
-      const request = document.getElementById("userRequest").value.trim();
-      const dropdownAgent = document.getElementById("agentSelect").value;
-      const agent = selectedAgent || dropdownAgent;
-      const tone = document.getElementById("toneInput").value.trim();
-      const title = document.getElementById("docTitle").value.trim() || "Documento senza titolo";
-      const format = document.getElementById("formatSelect").value;
-      const destination = document.getElementById("destinationSelect").value;
-      const folderId = document.getElementById("driveFolderId").value.trim();
-      const activeChip = behaviorChips.querySelector(".chip.active");
-      const behavior = activeChip ? activeChip.dataset.behavior : "non specificato";
-
-      if (!request) {
-        log("⚠ Nessuna richiesta inserita.");
+    sendBtn.addEventListener("click", async () => {
+      const text = document.getElementById("userInput").value.trim();
+      if (!text) {
+        log("⚠ Nessun testo inserito.");
         return;
       }
 
-      log("— Nuova richiesta ricevuta —");
-      log(`Richiesta: ${request}`);
-      log(`Comportamento: ${behavior} | Dettagli: ${tone || "nessuno"}`);
-      log(`Agente selezionato: ${agent}`);
-      log(`Titolo documento: ${title}`);
-      log(`Formato: ${format}`);
-      log(`Destinazione: ${destination === "drive" ? "Google Drive" : "Download locale"}`);
-      if (destination === "drive") {
-        log(`ID cartella Drive: ${folderId || "(manca, usare quello collegato)"}`);
-      }
+      log("➡ Inviato al backend: " + text);
 
-      // QUI, IN FUTURO:
-      // - chiamerai il tuo backend (API)
-      // - il backend userà gli agenti (web, notebook, drive, ecc.)
-      // - genererà il documento nel formato richiesto
-      // - lo salverà in Drive o lo restituirà come download
-      log("Simulazione: l'orchestratore deciderebbe ora quale agente chiamare e come comporre la pipeline.");
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await response.json();
+        log("⬅ Risposta dal backend:");
+        log(JSON.stringify(data, null, 2));
+
+      } catch (err) {
+        log("❌ Errore: " + err);
+      }
     });
   </script>
 </body>
