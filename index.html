@@ -135,6 +135,40 @@
       letter-spacing: 0.08em;
       opacity: 0.8;
     }
+
+    /* Agenti cliccabili */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .agent-card {
+      background: #0d0f14;
+      border: 1px solid #1f222b;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .agent-card:hover {
+      background: #1a1d25;
+      border-color: #2f7df4;
+    }
+    .agent-card.active {
+      background: #2f7df4;
+      border-color: #2f7df4;
+      color: white;
+    }
+    .agent-card h3 {
+      margin: 0 0 6px 0;
+      font-size: 14px;
+    }
+    .agent-card p {
+      margin: 0;
+      font-size: 11px;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body>
@@ -165,7 +199,46 @@
     <!-- 2. Scelta agente e comportamento -->
     <section class="panel">
       <h2>2 · Scelta agente e comportamento</h2>
-      <div class="row">
+
+      <!-- Agenti cliccabili con reminder -->
+      <div class="agent-grid">
+        <div class="agent-card" data-agent="orchestrator_agent">
+          <h3>Orchestrator</h3>
+          <p>Decide quali agenti usare e in che ordine.</p>
+        </div>
+
+        <div class="agent-card" data-agent="web_researcher">
+          <h3>Web Researcher</h3>
+          <p>Ricerca online, raccoglie fonti e studi.</p>
+        </div>
+
+        <div class="agent-card" data-agent="data_analyst">
+          <h3>Data Analyst</h3>
+          <p>Analizza dati, tabelle, numeri e risultati.</p>
+        </div>
+
+        <div class="agent-card" data-agent="report_generator">
+          <h3>Report Generator</h3>
+          <p>Crea documenti PDF, DOCX, MD.</p>
+        </div>
+
+        <div class="agent-card" data-agent="drive_manager">
+          <h3>Drive Manager</h3>
+          <p>Salva file e gestisce cartelle su Drive.</p>
+        </div>
+
+        <div class="agent-card" data-agent="notebook_writer">
+          <h3>Notebook Writer</h3>
+          <p>Genera codice, notebook e script.</p>
+        </div>
+
+        <div class="agent-card" data-agent="glyco_nutrition_agent">
+          <h3>Glyco Nutrition</h3>
+          <p>Analisi GI, GL, curve glicemiche, schede alimenti.</p>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top: 12px;">
         <div class="col">
           <label for="agentSelect">Agente (in futuro: selezione automatica)</label>
           <select id="agentSelect">
@@ -235,6 +308,8 @@
     const runButton = document.getElementById("runButton");
     const clearLogButton = document.getElementById("clearLog");
     const behaviorChips = document.getElementById("behaviorChips");
+    const agentCards = document.querySelectorAll(".agent-card");
+    let selectedAgent = null;
 
     function log(msg) {
       const time = new Date().toLocaleTimeString();
@@ -242,11 +317,22 @@
       logEl.scrollTop = logEl.scrollHeight;
     }
 
+    // Selezione comportamento (chip)
     behaviorChips.addEventListener("click", (e) => {
       const chip = e.target.closest(".chip");
       if (!chip) return;
       [...behaviorChips.querySelectorAll(".chip")].forEach(c => c.classList.remove("active"));
       chip.classList.add("active");
+    });
+
+    // Selezione agente (card cliccabili)
+    agentCards.forEach(card => {
+      card.addEventListener("click", () => {
+        agentCards.forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+        selectedAgent = card.dataset.agent;
+        log(`Agente selezionato: ${selectedAgent}`);
+      });
     });
 
     clearLogButton.addEventListener("click", () => {
@@ -255,7 +341,8 @@
 
     runButton.addEventListener("click", () => {
       const request = document.getElementById("userRequest").value.trim();
-      const agent = document.getElementById("agentSelect").value;
+      const dropdownAgent = document.getElementById("agentSelect").value;
+      const agent = selectedAgent || dropdownAgent;
       const tone = document.getElementById("toneInput").value.trim();
       const title = document.getElementById("docTitle").value.trim() || "Documento senza titolo";
       const format = document.getElementById("formatSelect").value;
@@ -290,4 +377,3 @@
   </script>
 </body>
 </html>
-
