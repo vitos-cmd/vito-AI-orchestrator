@@ -145,12 +145,11 @@
     const btn = document.getElementById('sendBtn');
     const logEl = document.getElementById('log');
 
-    async function callBackend(payload) {
-      // QUI: usa lo stesso endpoint che stai già usando ora
+    async function callBackend(message) {
       const res = await fetch('https://shy-butterfly-dca9.rallo-vito.workers.dev', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ message })
       });
       return res.json();
     }
@@ -176,12 +175,7 @@ Genera la scheda completa in JSON secondo il formato GLYCO definito nel system p
 `.trim();
 
       try {
-        const response = await callBackend({
-          messages: [
-            { role: "user", content: userMessage }
-          ]
-        });
-
+        const response = await callBackend(userMessage);
         logEl.textContent = JSON.stringify(response, null, 2);
       } catch (err) {
         logEl.textContent = 'Errore nella chiamata al backend: ' + err.message;
