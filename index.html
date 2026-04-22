@@ -2,119 +2,192 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Orchestrator · Vito Zero</title>
-
+  <title>GLYCO · Data Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: #050608;
+      color: #f5f5f5;
       margin: 0;
       padding: 0;
-      background: #0d0d0d;
-      color: white;
-      font-family: Arial, sans-serif;
+      display: flex;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
     }
-
-    header {
-      padding: 20px;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      border-bottom: 1px solid #222;
-    }
-
     .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
-    }
-
-    textarea {
       width: 100%;
-      height: 120px;
-      background: #111;
-      border: 1px solid #333;
-      color: white;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 6px;
-      resize: none;
+      max-width: 900px;
+      padding: 24px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top left, #1f2933, #050608);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
     }
-
+    h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 13px;
+      color: #d1d5db;
+      display: block;
+      margin-bottom: 6px;
+    }
+    textarea, input {
+      width: 100%;
+      background: rgba(15,23,42,0.9);
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.5);
+      color: #e5e7eb;
+      padding: 10px 12px;
+      font-size: 13px;
+      resize: vertical;
+      outline: none;
+    }
+    textarea:focus, input:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.4);
+    }
     button {
-      margin-top: 15px;
-      padding: 12px 20px;
-      background: #1a73e8;
+      margin-top: 12px;
+      padding: 10px 18px;
+      border-radius: 999px;
       border: none;
-      color: white;
-      font-size: 16px;
-      border-radius: 6px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #020617;
+      font-weight: 600;
+      font-size: 13px;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #1666c4;
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
     }
-
-    .log-box {
-      margin-top: 25px;
-      padding: 15px;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 6px;
-      height: 250px;
-      overflow-y: auto;
+    .row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .row > div {
+      flex: 1;
+      min-width: 180px;
+    }
+    .log {
+      margin-top: 18px;
+      font-size: 12px;
+      background: rgba(15,23,42,0.9);
+      border-radius: 10px;
+      border: 1px solid rgba(55,65,81,0.8);
+      padding: 10px 12px;
       white-space: pre-wrap;
-      font-size: 14px;
+      max-height: 320px;
+      overflow: auto;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
+      margin-bottom: 12px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
     }
   </style>
 </head>
-
 <body>
-  <header>AI Orchestrator · Vito Zero</header>
-
   <div class="container">
-    <h2>Invia una richiesta</h2>
+    <h1>GLYCO · Data Builder</h1>
+    <div class="subtitle">Generatore di schede alimenti in formato JSON, pronte per il database.</div>
 
-    <textarea id="userInput" placeholder="Scrivi qui la tua richiesta..."></textarea>
-    <button id="sendBtn">Invia al backend</button>
+    <div class="badge">
+      <span class="dot"></span>
+      <span>Workers AI · Llama 3 · Cloudflare</span>
+    </div>
 
-    <h3>Log</h3>
-    <div id="log" class="log-box"></div>
+    <div class="row">
+      <div>
+        <label for="foodName">Nome alimento</label>
+        <input id="foodName" placeholder="Es. Banana matura, Riso integrale cotto..." />
+      </div>
+      <div>
+        <label for="notes">Note / contesto (opzionale)</label>
+        <input id="notes" placeholder="Es. porzione tipica, uso, fonte, ecc." />
+      </div>
+    </div>
+
+    <label for="rawPrompt">Istruzioni aggiuntive per GLYCO (opzionale)</label>
+    <textarea id="rawPrompt" rows="3" placeholder="Es. usa porzione 80g, focalizzati su IG e CG, ecc."></textarea>
+
+    <button id="sendBtn">Genera scheda JSON</button>
+
+    <div class="log" id="log"></div>
   </div>
 
   <script>
-    const WORKER_URL = "https://shy-butterfly-dca9.rallo-vito.workers.dev/";
+    const btn = document.getElementById('sendBtn');
+    const logEl = document.getElementById('log');
 
-    const logBox = document.getElementById("log");
-    const sendBtn = document.getElementById("sendBtn");
-
-    function log(msg) {
-      logBox.textContent += msg + "\n";
-      logBox.scrollTop = logBox.scrollHeight;
+    async function callBackend(payload) {
+      // QUI: usa lo stesso endpoint che stai già usando ora
+      const res = await fetch('https://shy-butterfly-dca9.rallo-vito.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return res.json();
     }
 
-    sendBtn.addEventListener("click", async () => {
-      const text = document.getElementById("userInput").value.trim();
-      if (!text) {
-        log("⚠ Nessun testo inserito.");
+    btn.addEventListener('click', async () => {
+      const foodName = document.getElementById('foodName').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+      const rawPrompt = document.getElementById('rawPrompt').value.trim();
+
+      if (!foodName) {
+        alert('Inserisci almeno il nome dell\'alimento.');
         return;
       }
 
-      log("➡ Inviato al backend: " + text);
+      btn.disabled = true;
+      btn.textContent = 'Generazione in corso...';
+
+      const userMessage = `
+Alimento: ${foodName}
+Note: ${notes || 'Nessuna'}
+Istruzioni aggiuntive: ${rawPrompt || 'Nessuna'}
+Genera la scheda completa in JSON secondo il formato GLYCO definito nel system prompt.
+`.trim();
 
       try {
-        const response = await fetch(WORKER_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text })
+        const response = await callBackend({
+          messages: [
+            { role: "user", content: userMessage }
+          ]
         });
 
-        const data = await response.json();
-        log("⬅ Risposta dal backend:");
-        log(JSON.stringify(data, null, 2));
-
+        logEl.textContent = JSON.stringify(response, null, 2);
       } catch (err) {
-        log("❌ Errore: " + err);
+        logEl.textContent = 'Errore nella chiamata al backend: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Genera scheda JSON';
       }
     });
   </script>
