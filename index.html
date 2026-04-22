@@ -151,7 +151,19 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message })
       });
-      return res.json();
+
+      const data = await res.json();
+
+      // Parsing del JSON restituito come stringa
+      if (data.response && typeof data.response === "string") {
+        try {
+          data.parsed = JSON.parse(data.response);
+        } catch (e) {
+          data.parsed = { errore: "Impossibile interpretare il JSON", raw: data.response };
+        }
+      }
+
+      return data;
     }
 
     btn.addEventListener('click', async () => {
@@ -176,7 +188,13 @@ Genera la scheda completa in JSON secondo il formato GLYCO definito nel system p
 
       try {
         const response = await callBackend(userMessage);
-        logEl.textContent = JSON.stringify(response, null, 2);
+
+        if (response.parsed) {
+          logEl.textContent = JSON.stringify(response.parsed, null, 2);
+        } else {
+          logEl.textContent = JSON.stringify(response, null, 2);
+        }
+
       } catch (err) {
         logEl.textContent = 'Errore nella chiamata al backend: ' + err.message;
       } finally {
