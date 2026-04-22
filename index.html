@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <title>GLYCO · Data Builder</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background: #050608;
       color: #f5f5f5;
       margin: 0;
@@ -53,10 +54,6 @@
       resize: vertical;
       outline: none;
     }
-    textarea:focus, input:focus {
-      border-color: #22c55e;
-      box-shadow: 0 0 0 1px rgba(34,197,94,0.4);
-    }
     button {
       margin-top: 12px;
       padding: 10px 18px;
@@ -67,20 +64,6 @@
       font-weight: 600;
       font-size: 13px;
       cursor: pointer;
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-    .row {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .row > div {
-      flex: 1;
-      min-width: 180px;
     }
     .log {
       margin-top: 18px;
@@ -111,9 +94,11 @@
       background: #22c55e;
     }
   </style>
-  <!-- Ajv per validazione JSON Schema -->
+
+  <!-- AJV VALIDATOR -->
   <script src="https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv7.min.js"></script>
 </head>
+
 <body>
   <div class="container">
     <h1>GLYCO · Data Builder</h1>
@@ -126,17 +111,17 @@
 
     <div class="row">
       <div>
-        <label for="foodName">Nome alimento</label>
-        <input id="foodName" placeholder="Es. Banana matura, Riso integrale cotto..." />
+        <label>Nome alimento</label>
+        <input id="foodName" placeholder="Es. Banana matura" />
       </div>
       <div>
-        <label for="notes">Note / contesto (opzionale)</label>
-        <input id="notes" placeholder="Es. porzione tipica, uso, fonte, ecc." />
+        <label>Note / contesto (opzionale)</label>
+        <input id="notes" placeholder="Es. porzione tipica, uso, fonte..." />
       </div>
     </div>
 
-    <label for="rawPrompt">Istruzioni aggiuntive per GLYCO (opzionale)</label>
-    <textarea id="rawPrompt" rows="3" placeholder="Es. usa porzione 80g, focalizzati su IG e CG, ecc."></textarea>
+    <label>Istruzioni aggiuntive (opzionale)</label>
+    <textarea id="rawPrompt" rows="3"></textarea>
 
     <button id="sendBtn">Genera scheda JSON</button>
 
@@ -156,19 +141,43 @@
 
       const data = await res.json();
 
-      // Parsing del JSON restituito come stringa
       if (data.response && typeof data.response === "string") {
         try {
           data.parsed = JSON.parse(data.response);
-        } catch (e) {
-          data.parsed = { errore: "Impossibile interpretare il JSON", raw: data.response };
+        } catch {
+          data.parsed = null;
         }
       }
 
       return data;
     }
 
-    // --- VALIDATORE GLYCO INLINE ---
+    // -----------------------------
+    // NORMALIZZATORE GLYCO v1.0
+    // -----------------------------
+    function normalizeGlyco(json) {
+      if (!json || typeof json !== "object") return json;
+
+      // Ordina le chiavi
+      const ordered = {};
+      const order = [
+        "id","nome","categoria","sottocategoria","sinonimi",
+        "porzione_standard_g","macronutrienti","micronutrienti",
+        "glicemia","follow_up","note"
+      ];
+      order.forEach(k => { if (json[k] !== undefined) ordered[k] = json[k]; });
+
+      // Normalizza stringhe
+      if (ordered.nome) ordered.nome = ordered.nome.trim();
+      if (ordered.categoria) ordered.categoria = ordered.categoria.trim();
+      if (ordered.sottocategoria) ordered.sottocategoria = ordered.sottocategoria.trim();
+
+      return ordered;
+    }
+
+    // -----------------------------
+    // VALIDATORE GLYCO INLINE
+    // -----------------------------
     async function validateGlycoInline(jsonData) {
       const schema = await fetch("https://vitos-cmd.github.io/glyco-schema-v1.json")
         .then(r => r.json());
@@ -184,49 +193,55 @@
       };
     }
 
+    // -----------------------------
+    // CLICK HANDLER
+    // -----------------------------
     btn.addEventListener('click', async () => {
       const foodName = document.getElementById('foodName').value.trim();
       const notes = document.getElementById('notes').value.trim();
       const rawPrompt = document.getElementById('rawPrompt').value.trim();
 
       if (!foodName) {
-        alert('Inserisci almeno il nome dell\'alimento.');
+        alert("Inserisci almeno il nome dell'alimento.");
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = 'Generazione in corso...';
-      logEl.textContent = '⏳ Generazione in corso...\n';
+      btn.textContent = "Generazione...";
+      logEl.textContent = "⏳ Generazione in corso...\n";
 
       const userMessage = `
 Alimento: ${foodName}
 Note: ${notes || 'Nessuna'}
 Istruzioni aggiuntive: ${rawPrompt || 'Nessuna'}
-Genera la scheda completa in JSON secondo il formato GLYCO definito nel system prompt.
+Genera la scheda completa in JSON secondo GLYCO v1.0.
 `.trim();
 
       try {
         const response = await callBackend(userMessage);
 
-        if (response.parsed) {
-          logEl.textContent = JSON.stringify(response.parsed, null, 2);
-          const validation = await validateGlycoInline(response.parsed);
+        if (!response.parsed) {
+          logEl.textContent = "❌ JSON non interpretabile:\n\n" + response.response;
+          return;
+        }
 
-          if (!validation.valido) {
-            logEl.textContent += "\n\n⚠️ ERRORI DI VALIDAZIONE GLYCO:\n" +
-              JSON.stringify(validation.errori, null, 2);
-          } else {
-            logEl.textContent += "\n\n✅ Scheda GLYCO valida secondo lo schema v1.0.";
-          }
+        const normalized = normalizeGlyco(response.parsed);
+        logEl.textContent = JSON.stringify(normalized, null, 2);
+
+        const validation = await validateGlycoInline(normalized);
+
+        if (!validation.valido) {
+          logEl.textContent += "\n\n⚠️ ERRORI DI VALIDAZIONE:\n" +
+            JSON.stringify(validation.errori, null, 2);
         } else {
-          logEl.textContent = JSON.stringify(response, null, 2);
+          logEl.textContent += "\n\n✅ Scheda GLYCO valida.";
         }
 
       } catch (err) {
-        logEl.textContent = 'Errore nella chiamata al backend: ' + err.message;
+        logEl.textContent = "Errore backend: " + err.message;
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Genera scheda JSON';
+        btn.textContent = "Genera scheda JSON";
       }
     });
   </script>
