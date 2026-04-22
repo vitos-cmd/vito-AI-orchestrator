@@ -111,6 +111,8 @@
       background: #22c55e;
     }
   </style>
+  <!-- Ajv per validazione JSON Schema -->
+  <script src="https://cdn.jsdelivr.net/npm/ajv@8.12.0/dist/ajv7.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -166,6 +168,22 @@
       return data;
     }
 
+    // --- VALIDATORE GLYCO INLINE ---
+    async function validateGlycoInline(jsonData) {
+      const schema = await fetch("https://vitos-cmd.github.io/glyco-schema-v1.json")
+        .then(r => r.json());
+
+      const ajv = new Ajv({ allErrors: true });
+      const validate = ajv.compile(schema);
+
+      const valid = validate(jsonData);
+
+      return {
+        valido: valid,
+        errori: validate.errors || []
+      };
+    }
+
     btn.addEventListener('click', async () => {
       const foodName = document.getElementById('foodName').value.trim();
       const notes = document.getElementById('notes').value.trim();
@@ -178,6 +196,7 @@
 
       btn.disabled = true;
       btn.textContent = 'Generazione in corso...';
+      logEl.textContent = '⏳ Generazione in corso...\n';
 
       const userMessage = `
 Alimento: ${foodName}
@@ -191,6 +210,14 @@ Genera la scheda completa in JSON secondo il formato GLYCO definito nel system p
 
         if (response.parsed) {
           logEl.textContent = JSON.stringify(response.parsed, null, 2);
+          const validation = await validateGlycoInline(response.parsed);
+
+          if (!validation.valido) {
+            logEl.textContent += "\n\n⚠️ ERRORI DI VALIDAZIONE GLYCO:\n" +
+              JSON.stringify(validation.errori, null, 2);
+          } else {
+            logEl.textContent += "\n\n✅ Scheda GLYCO valida secondo lo schema v1.0.";
+          }
         } else {
           logEl.textContent = JSON.stringify(response, null, 2);
         }
